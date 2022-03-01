@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\TransactionApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +19,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('register_user', [UserController::class, 'registerUser']); 
+Route::post('login_user', [UserController::class, 'userLogin']);   
+Route::post('purchase_new_loan', [TransactionApiController::class, 'purchaseNewLoan']);   
+
+
+
