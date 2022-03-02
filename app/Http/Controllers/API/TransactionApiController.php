@@ -46,6 +46,7 @@ class TransactionApiController extends Controller
                 $newTransaction->receiver_id = $request->user_id;
                 $newTransaction->no_of_installments = $request->no_of_installments;
                 $newTransaction->sender_id = $request->lender_id;
+                $newTransaction->status = 1;
                 $newTransaction->save();                
                 
                 if(!$newTransaction->id){ 

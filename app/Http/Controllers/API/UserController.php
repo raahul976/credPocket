@@ -121,7 +121,7 @@ class UserController extends Controller
             return response()->json([
                 'status'=> 1,
                 'message' => 'Logged In ',
-                'data' => array(array(
+                'data' => array(array( 
                     'driver_data' => $customerData,
                     'api_token' => $token
                 )),
@@ -136,6 +136,42 @@ class UserController extends Controller
             ], 200);
         }
 
+    }
+
+    /* 
+    List all users with type as (1) i.e. money lenders
+    */
+    public function listMoneyLenders(){
+        try{
+
+            $lenders = User::where('type', 1)->get();            
+            if($lenders->isEmpty()){
+                return response()->json([
+                    'status'=> 1,
+                    'message' => 'No money lenders to list',
+                    'data' =>[]
+                ], 200);
+            }
+            $lendersList = [];
+            foreach($lenders as $lender){
+                $lendersList[] = array(
+                    'user_id' => $lender->id,
+                    'user_name' => $lender->name
+                );
+            }
+            return response()->json([
+                'status'=> 1,
+                'message' => 'Money Lenders list',
+                'data' => $lendersList
+            ], 200);
+        }
+        catch(\Exception $e){
+            return response()->json([
+                'status'=> 0,
+                'error' => $e->getMessage(),
+                'message' => 'Something went wrong'
+            ], 200);
+        }
     }
     
 }
