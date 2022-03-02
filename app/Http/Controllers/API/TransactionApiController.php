@@ -97,7 +97,7 @@ class TransactionApiController extends Controller
             $user = User::where('id', $request->borrower_id)->first()->toArray();            
             if(intval($user['type']) == 2){
 
-                $transactions = Transaction::where(['receiver_id' => $request->borrower_id, 'status' => 0])->orderBy('id', 'DESC')->get();
+                $transactions = Transaction::where(['receiver_id' => $request->borrower_id, 'status' => 1])->orderBy('id', 'DESC')->get();
                 $transactionList = [];
                 foreach($transactions as $transaction){
 
