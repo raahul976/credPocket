@@ -25,7 +25,8 @@ Route::post('register_user', [UserController::class, 'registerUser']);
 Route::post('login_user', [UserController::class, 'userLogin']);  
 Route::get('get_all_lenders', [UserController::class, 'listMoneyLenders']); 
 Route::post('purchase_new_loan', [TransactionApiController::class, 'purchaseNewLoan']);
-Route::post('pay_instalment', [InstalmentController::class, 'payInstalment']);  
+Route::post('pay_instalment', [InstalmentController::class, 'payInstalment']);
+Route::get('get_active_loan_transactions', [TransactionApiController::class, 'getActiveTransactions']);   
 
 
 

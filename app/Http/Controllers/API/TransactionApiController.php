@@ -89,4 +89,60 @@ class TransactionApiController extends Controller
             
         }
     }
+
+    public function getActiveTransactions(Request $request){
+
+        try {     
+
+            $user = User::where('id', $request->borrower_id)->first()->toArray();            
+            if(intval($user['type']) == 2){
+
+                $transactions = Transaction::where(['receiver_id' => $request->borrower_id, 'status' => 0])->orderBy('id', 'DESC')->get();
+                $transactionList = [];
+                foreach($transactions as $transaction){
+
+                    $transactionList[] = array(
+
+                        'transaction_id' => $transaction->id,
+                        'lender_id' => $transaction->sender_id,
+                        'receiver_id' => $transaction->receiver_id,
+                        'amount' => $transaction->price,
+                        'no_of_instalments' => $transaction->no_of_installments,                        
+
+                    );
+                }  
+                
+                return response()->json([
+                    'status'=> 1,
+                    'message' => 'Active Loan Transactions',
+                    'data' => $transactionList
+                ], 200);
+
+                
+
+            }else{
+
+                return response()->json([
+                    'status'=> 0,
+                    'message' => 'Invalid user type',                    
+                    'data' => []
+                ], 200);
+                
+
+
+            }
+            
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status'=> 0,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+                'data' => []
+            ], 200);
+            
+        }
+
+    }
 }
