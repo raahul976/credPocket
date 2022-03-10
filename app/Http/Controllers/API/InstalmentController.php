@@ -39,15 +39,16 @@ class InstalmentController extends Controller
             }else{                
                 
                 $checkInstalmentCount = Instalment::Select('instalment_count')->where(['transaction_id' => $request->transaction_id])->orderBy('instalment_count', 'DESC')->first();
-                $checkInstalmentCount == null ? $checkInstalmentCount = 0 : $checkInstalmentCount->instalment_count;  
-                //dd($checkInstalmentCount->instalment_count);           
-                if( $loanTransaction['no_of_installments'] > $checkInstalmentCount->instalment_count ){                    
+                
+                $checkInstalmentCount == null ? $checkInstalmentCount = 0 : $checkInstalmentCount = $checkInstalmentCount->instalment_count;  
+                //dd($checkInstalmentCount);           
+                if( $loanTransaction['no_of_installments'] > $checkInstalmentCount ){                    
                     $instalment = new Instalment();
                     $instalment->transaction_id = $request->transaction_id;
                     $instalment->lender_id = $request->lender_id;
                     $instalment->borrower_id = $request->borrower_id;
                     $instalment->instalment_amount = $request->instalment_amount;
-                    $instalment->instalment_count = intval($checkInstalmentCount->instalment_count) + 1 ;                   
+                    $instalment->instalment_count = intval($checkInstalmentCount) + 1 ;                   
                     $instalment->created_at = Carbon::now();
                     $instalment->save();
                     
@@ -69,6 +70,19 @@ class InstalmentController extends Controller
                             //'remaining_instalment' => int($loanTransaction['no_of_installments'] - $instalment->instalment_count),                       
                             
                         );
+
+                        
+                        if($instalment->instalment_count == $loanTransaction['no_of_installments']){
+
+                            return response()->json([
+                            
+                                'status'=> 1,
+                                'message' => 'Instalment Paid Succesfully. Your loan is now cleared',
+                                'data' => $successData
+                                
+                            ], 200);
+
+                        }
                         
                         return response()->json([
                             
