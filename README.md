@@ -1,1 +1,1 @@
-**CredPocket** is a money lending application that allows user to borrow loan instantly witihin five minutes.
+**CredPokket** lets users borrow loans in a fraction of the time it takes to brew a cup of coffee.
