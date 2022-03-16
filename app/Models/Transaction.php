@@ -10,7 +10,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-'sender_id', 'receiver_id', 'price', 'no_of_installments', 'status'
+'sender_id', 'receiver_id', 'price', 'no_of_installments', 'status', 'approved'
     ];
 }
 
