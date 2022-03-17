@@ -41,7 +41,10 @@ class TransactionApiController extends Controller
                 
             }else{
                 
-                $userDetails = User::where(['id' => $request->user_id, 'type' => $request->type ])->first()->toArray();                
+                
+                $userDetails = User::where(['id' => $request->user_id, 'type' => $request->type ])->first()->toArray();  
+                $checkExistingLoan = Transaction::where(['receiver_id' => $request->user_id, 'status' => 1])->first()->toArray();
+                // code for returning            
                 $newTransaction = new Transaction();
                 $newTransaction->price = $request->principal_amount;
                 $newTransaction->receiver_id = $request->user_id;
@@ -96,10 +99,15 @@ class TransactionApiController extends Controller
         
         try {     
             
-            $user = User::where('id', $request->borrower_id)->first()->toArray();            
-            if(intval($user['type']) == 2){
+            $user = User::where('id', $request->borrower_id)->first()->toArray();         
+            
+            if($user['type'] == "1"){
+                $field_key = 'sender_id';                
+            }else{
+                $field_key = 'receiver_id';
+            } 
                 
-                $transactions = Transaction::where(['receiver_id' => $request->borrower_id, 'status' => 1])->orderBy('id', 'DESC')->get();
+                $transactions = Transaction::where([$field_key => $request->borrower_id, 'status' => 1])->orderBy('id', 'DESC')->get();
                 $transactionList = [];
                 foreach($transactions as $transaction){ 
                     $checkInstalmentCount = Instalment::Select('instalment_count')->where(['transaction_id' => $transaction->id])->orderBy('instalment_count', 'DESC')->first();
@@ -107,6 +115,7 @@ class TransactionApiController extends Controller
                     $checkInstalmentCount == null ? $checkInstalmentCount = 0 : $checkInstalmentCount = $checkInstalmentCount->instalment_count;     
                     
                     $lender = User::where('id', $transaction->sender_id)->first()->toArray();
+                    $borrower = User::where('id', $transaction->receiver_id)->first()->toArray();
                     
                     
                     $transactionList[] = array(                        
@@ -117,6 +126,7 @@ class TransactionApiController extends Controller
                         'amount' => $transaction->price,
                         'no_of_instalments' => $transaction->no_of_installments, 
                         'lender_name' => $lender['name'], 
+                        'borrower_name' => $borrower['name'],
                         'date' => $transaction->created_at->format('m/d/Y'),  
                         'status' => $transaction->status,   
                         'instalments_paid' => $checkInstalmentCount,                     
@@ -133,17 +143,7 @@ class TransactionApiController extends Controller
                 
                 
                 
-            }else{
-                
-                return response()->json([
-                    'status'=> 0,
-                    'message' => 'Invalid user type',                    
-                    'data' => []
-                ], 200);
-                
-                
-                
-            }
+            
             
             
         } catch (\Exception $e) {
@@ -163,14 +163,20 @@ class TransactionApiController extends Controller
         
         try {     
             
-            $user = User::where('id', $request->borrower_id)->first()->toArray();            
-            if(intval($user['type']) == 2){
+            $user = User::where('id', $request->borrower_id)->first()->toArray();   
+            if($user['type'] == "1"){
+                $field_key = 'sender_id';                
+            }else{
+                $field_key = 'receiver_id';
+            }       
+            
                 
-                $transactions = Transaction::where(['receiver_id' => $request->borrower_id])->orderBy('id', 'DESC')->get();
+                $transactions = Transaction::where([$field_key => $request->borrower_id])->orderBy('id', 'DESC')->get();
                 $transactionList = [];
                 foreach($transactions as $transaction){    
                     
                     $lender = User::where('id', $transaction->sender_id)->first()->toArray();
+                    $borrower = User::where('id', $transaction->receiver_id)->first()->toArray();
                     
                     
                     $transactionList[] = array(                        
@@ -181,6 +187,7 @@ class TransactionApiController extends Controller
                         'amount' => $transaction->price,
                         'no_of_instalments' => $transaction->no_of_installments, 
                         'lender_name' => $lender['name'], 
+                        'borrower_name' => $borrower['name'],
                         'date' => $transaction->created_at->format('m/d/Y'),   
                         'status' => $transaction->status,                    
                         
@@ -196,17 +203,7 @@ class TransactionApiController extends Controller
                 
                 
                 
-            }else{
-                
-                return response()->json([
-                    'status'=> 0,
-                    'message' => 'Invalid user type',                    
-                    'data' => []
-                ], 200);
-                
-                
-                
-            }
+            
             
             
         } catch (\Exception $e) {
@@ -230,7 +227,7 @@ class TransactionApiController extends Controller
             $user = User::where('id', $request->lender_id)->first()->toArray();            
             if(intval($user['type']) == 1){
                 
-                $transactions = Transaction::where(['sender_id' => $request->lender_id])->orderBy('id', 'DESC')->get();
+                $transactions = Transaction::where(['sender_id' => $request->lender_id, 'approved' => 0])->orderBy('id', 'DESC')->get();
                 $transactionList = [];
                 foreach($transactions as $transaction){    
                     

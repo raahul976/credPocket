@@ -107,22 +107,23 @@ class UserController extends Controller
             else{
 
                 $token = Hash::make(Str::random(25)).Hash::make(Str::random(25));                
-                $customerUpdateQry = User::where('mobile', $request->mobile)->where('type', $request->type)->update(['api_token' => $token]);
-                $customerDetails = User::where('mobile', $request->mobile)->where('type', $request->type)->first();
-                if($customerDetails == null){
+                $customerUpdateQry = User::where('mobile', $request->mobile)->update(['api_token' => $token]);
+                $customerDetails = User::where('mobile', $request->mobile)->first();
+                // if($customerDetails == null){
 
-                    return response()->json([
-                        'status'=> 0,
-                        'message' => 'Invalid user type provided'
-                    ], 200);
+                //     return response()->json([
+                //         'status'=> 0,
+                //         'message' => 'Invalid user type provided'
+                //     ], 200);
 
-                }             
+                // }             
                 $customerData[] = array(
                     'user_id' => $customerDetails->id,
                     'mobile' =>$customerDetails->mobile,
                     'name' => $customerDetails->name,
                     'mobile' => $customerDetails->mobile,
-                    'email' => $customerDetails->email,                    
+                    'email' => $customerDetails->email,
+                    'type' => $customerDetails->type,                    
                 );
                 
             }
