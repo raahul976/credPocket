@@ -46,6 +46,7 @@ class UserController extends Controller
                 $user->email = $request->email;                    
                 $user->type = $request->type;
                 $user->password = encrypt($request->password);
+                $user->pan_number = $request->pan_number;
                 $user->api_token = $token;             
                 $user->save();
                 
@@ -63,6 +64,7 @@ class UserController extends Controller
                         'name' => $user->name, 
                         'email' =>$user->email,
                         'mobile' => $user->mobile,
+                        'pan_number' => $user->pan_number,
                         'api_token' => $user->api_token,                                                                                              
                     );
                     return response()->json([
@@ -123,6 +125,7 @@ class UserController extends Controller
                     'name' => $customerDetails->name,
                     'mobile' => $customerDetails->mobile,
                     'email' => $customerDetails->email,
+                    'pan_number' => $customerDetails->pan_number,
                     'type' => $customerDetails->type,                    
                 );
                 

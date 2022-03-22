@@ -30,6 +30,7 @@ Route::get('get_active_loan_transactions', [TransactionApiController::class, 'ge
 Route::get('get_all_transactions', [TransactionApiController::class, 'getAllTransactions']); 
 Route::get('get_loan_requests', [TransactionApiController::class, 'listLenderRequests']);   
 Route::post('approve_transaction', [TransactionApiController::class, 'approveTransactionByLender']);
+Route::get('instalment_details', [InstalmentController::class, 'getInstalments']);
 
 
 

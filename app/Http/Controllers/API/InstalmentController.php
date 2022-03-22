@@ -126,4 +126,56 @@ class InstalmentController extends Controller
         }
         
     }
+
+    public function getInstalments(Request $request){
+
+        try {
+           DB::beginTransaction();
+           $instalments = Instalment::where(['transaction_id' => $request->transaction_id])->orderBy('id', 'DESC')->get();           
+           if(count($instalments) > 0 ){
+
+            $instalmentList = [];
+            foreach($instalments as $instalment){
+
+
+                $instalmentList[] = array(
+
+
+                    'id' => $instalment->id,
+                    'transaction_id' => $instalment->transaction_id,
+                    'lender_id' => $instalment->lender_id,
+                    'borrower_id' => $instalment->borrower_id,
+                    'instalment_count' => $instalment->instalment_count,
+                    'instalment_amount' => $instalment->instalment_amount,
+                    'date' => $instalment->created_at->format('m/d/Y'),
+
+                );
+
+
+            }
+
+            return response()->json([
+                'status'=> 1,
+                'message' => 'Instalment Details',
+                'data' => $instalmentList
+            ], 200);
+
+           }else{
+
+            return response()->json([
+                'status'=> 0,                
+                'message' => 'No instalments found yet'
+            ], 200);
+
+           }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status'=> 0,
+                'error' => $e->getMessage(),
+                'message' => 'Something went wrong'
+            ], 200);
+        }
+
+    }
 }
