@@ -43,8 +43,16 @@ class TransactionApiController extends Controller
                 
                 
                 $userDetails = User::where(['id' => $request->user_id, 'type' => $request->type ])->first()->toArray();  
-                $checkExistingLoan = Transaction::where(['receiver_id' => $request->user_id, 'status' => 1])->first()->toArray();
-                // code for returning            
+                $checkExistingLoan = Transaction::where(['receiver_id' => $request->user_id, 'status' => 1])->get();
+                //dd($checkExistingLoan);
+                if(count($checkExistingLoan) > 0 ){
+
+                    return response()->json([
+                        'status'=> 0,
+                        'message' => 'You already have an active loan'
+                    ], 200);
+
+                }       
                 $newTransaction = new Transaction();
                 $newTransaction->price = $request->principal_amount;
                 $newTransaction->receiver_id = $request->user_id;
@@ -298,7 +306,7 @@ class TransactionApiController extends Controller
                 
             } else{
                 
-                $changeStatusOfTrans = $trans->update(["approved" => 1]);
+                $changeStatusOfTrans = $trans->update(["approved" => 1, "status" => 1]);
                 DB::commit();
                 
                 return response()->json([
