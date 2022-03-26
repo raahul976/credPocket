@@ -39,9 +39,16 @@ class InstalmentController extends Controller
             }else{                
                 
                 $checkInstalmentCount = Instalment::Select('instalment_count')->where(['transaction_id' => $request->transaction_id])->orderBy('instalment_count', 'DESC')->first();
+                $countMonthInstalment = Instalment::whereMonth('created_at', Carbon::now()->month)->where(['transaction_id' => $request->transaction_id])->count();
                 
                 $checkInstalmentCount == null ? $checkInstalmentCount = 0 : $checkInstalmentCount = $checkInstalmentCount->instalment_count;  
-                //dd($checkInstalmentCount);           
+                //dd($checkInstalmentCount);      
+                if($countMonthInstalment > 0){
+                    return response()->json([
+                        'status'=> 0,
+                        'message' => 'You have already paid this months instalment'
+                    ], 200);
+                }     
                 if( $loanTransaction['no_of_installments'] > $checkInstalmentCount ){                    
                     $instalment = new Instalment();
                     $instalment->transaction_id = $request->transaction_id;
